@@ -59,12 +59,14 @@ public class PrintAllObjectFields {
 		
 			Field[] classFields = object.getClass().getDeclaredFields();
 	
+			//definisco un identificatore delle mie classi per discriminare in seguito il tipo di parsing
 			String PACKAGE = "lancill.objectfields.pojo";
 			
 			Field [] superClassFields;
+			//Creo un array con tutti i campi dell'oogetto
 			Field [] allClassFields = ArrayUtils.addAll(classFields);
 			
-			//Recupero gli attributi della classe Person
+			//Recupero i campi della classe Person
 			Class superClass = object.getClass().getSuperclass();
 			if(superClass.getCanonicalName().startsWith(PACKAGE)){
 				superClassFields = superClass.getDeclaredFields();
@@ -79,7 +81,10 @@ public class PrintAllObjectFields {
 				String fieldName = field.getName();
 				Object value;
 				try {
-					String canonicalName =field.getType().getCanonicalName(); 
+					//recupeo il tipo del campo
+					String canonicalName =field.getType().getCanonicalName();
+					
+					//controllo se è un campo di un tipo primitivo Java
 					if(!canonicalName.startsWith("java.util.List") && !canonicalName.startsWith(PACKAGE)){
 	
 						value = field.get(object);
@@ -87,13 +92,20 @@ public class PrintAllObjectFields {
 								+ parentFieldName + "." + fieldName + ", Valore attributo: "
 								+ value);
 					}else{
+						/**
+						 * Eseguo il parsing di un campo complesso:
+						 * Liste
+						 * Classi del mio package
+						 **/
 						Object complexObj = field.get(object);
 						
 						if(complexObj!=null){
 							if(complexObj instanceof List){//GESTIONE LISTE
 								System.out.println("FIELD UTENTE: START Attributo complesso:"+parentFieldName+"."+fieldName);
+								//Recupeo l'istanza della lista
 								List<Object> list = (List<Object>)complexObj;
 								int count=1;
+								//Ciclo su tutti gli elementi della lista
 								for(Object objInList : list){
 									String objCanonicalName =objInList.getClass().getCanonicalName(); 
 									if(!objCanonicalName.startsWith(PACKAGE)){//se il tipo dell'oggetto non è complesso
@@ -101,13 +113,16 @@ public class PrintAllObjectFields {
 												+ parentFieldName + "." + fieldName +".[elemento-"+count+"], Valore attributo: "
 												+ objInList);
 									}else{
+										//uso la ricorsione per eseguire gli stessi calcoli in profondita
 										printAllUserField(objInList, parentFieldName+"."+fieldName+".[elemento-"+count+"]");
 									}
 									count++;
 								}
 								System.out.println("FIELD UTENTE: END Attributo complesso:"+fieldName);
-							}else{
-								System.out.println("FIELD UTENTE: START Attributo complesso:"+parentFieldName+"."+fieldName); 
+								
+							}else{//GESTIONE OGGETTO COMPLESSO DEL MIO PACKAGE
+								System.out.println("FIELD UTENTE: START Attributo complesso:"+parentFieldName+"."+fieldName);
+								//uso la ricorsione per eseguire gli stessi calcoli in profondita
 								printAllUserField(complexObj, parentFieldName+"."+fieldName);
 								System.out.println("FIELD UTENTE: END Attributo complesso:"+fieldName);
 							}

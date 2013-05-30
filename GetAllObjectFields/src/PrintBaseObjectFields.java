@@ -18,14 +18,17 @@ public class PrintBaseObjectFields {
 		String parentFieldName = aFieldName;
 
 		try {
+			//recupero tutti i campi della classe del mio ogetto
 			Field[] classFields = object.getClass().getDeclaredFields();
 	
 			for (Field field : classFields) {
+				//imposto il campo accessibile altrimenti JAva solleva una eccezione
 				field.setAccessible(true);
 	
 				String fieldName = field.getName();
 				Object value;
 				try {
+					//recupero il valore del campo per l'istanzia della classe
 					value = field.get(object);
 					System.out.println("FIELD UTENTE: Nome attributo: "
 							+ parentFieldName + "." + fieldName + ", Valore attributo: "
