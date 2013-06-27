@@ -49,7 +49,7 @@ public class PrintBaseObjectFields {
 	private static User getUser() {
 		User user = new User();
 		user.setName("Peter");
-		user.setName("Pan");
+		user.setSurname("Pan");
 		user.setAge("12");
 		user.setMail("peterpan@isolachenonce.net");
 		user.setUserid("pp");
